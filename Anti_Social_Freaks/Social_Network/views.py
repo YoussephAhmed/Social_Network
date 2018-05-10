@@ -6,20 +6,35 @@ from django .template import loader
 from .models import *
 from django.shortcuts import redirect
 from django.contrib.auth import logout
-
 # Create your views here.
-
-
-
-
 ####################### Log In and Log Out
 
+def NewsFeed(id):
+    current_user = User.objects.get(id=id)
+    my_connections = Connection.objects.filter(From=current_user, status=1)
+    time_line_posts=[]
+    for connection in my_connections:
+        friend=User.objects.get(id=connection.To.id)
+        friend_post=Post.objects.filter(publisher=friend)
+        time_line_posts.extend(friend_post)
 
-def start(request):
-    return render(request,'Social_Network/start.html')
+    return time_line_posts
 
+def getSuggestedFriends(id):
+    current_user= User.objects.get(id=id)
+    my_connections = Connection.objects.filter(From=current_user, status=1)  # bagib el friends bto3i
+    suggested_friends = []
+    suggested_connections = []
 
+    for connection in my_connections:
+        friend = User.objects.get(id=connection.To.id)
+        suggested_connections.extend(Connection.objects.filter(From=friend, status=1))
 
+    for suggested_connection in suggested_connections:
+        suggested_friend = User.objects.get(id=suggested_connection.To.id)
+        if suggested_friend.id != current_user.id:
+            suggested_friends.append(suggested_friend)
+    return suggested_friends
 
 def register(request):
     if request.method =='POST':
@@ -34,52 +49,18 @@ def register(request):
         args={'form':form}
         return render(request,'Social_Network/registration.html',args)
 
-
-
-
-
 def login_redirect( request ):
     return redirect("/anti-social/home")
-
-
-
-
 
 def logout_view(request):
     logout(request)
     return render(request,'Social_Network/logout.html')
-
-
-
-
 ####################### Log In and Log Out
 
-def getSuggestedFriends(id):
-    my_connections = Connection.objects.filter(From=id ,status=1)#bagib el friends bto3i
-
-    suggested_friends=[]
-    suggested_connections=[]
-
-
-    for connection in my_connections:
-        suggested_connections.append( Connection.objects.filter(From=connection.To, status=1))
-
-    for connection in suggested_connections:
-        if connection.To!=id :
-            suggested_friends.append(connection.To)
-
-    return suggested_friends
-
-
-
-
 def home(request): # news feed and posts from other freaks
-
     if request.method == 'POST':
         # Create a form instance
         post_form = postForm(request.POST)
-
-
         if(post_form.is_valid()):
             user_of_post = User.objects.get(id=request.user.id)
             post_of_user = post_form.cleaned_data['post']
@@ -88,23 +69,19 @@ def home(request): # news feed and posts from other freaks
     else:
         post_form = postForm()
         search_form = searchForm()
-
     comment_form = commentForm()
-    posts = Post.objects.exclude(publisher=request.user)
-
-   # suggested_friends=getSuggestedFriends(request.user)
-
+    posts = NewsFeed(request.user.id)
+    suggested_friends = getSuggestedFriends(request.user.id)
     context = {
         'user': request.user,
         'post_form': post_form,
         'comment_form': comment_form,
         'posts': posts,
         'search_form' : search_form,
-    #    'suggested_friends' : suggested_friends
+        'suggested_friends' : suggested_friends
     }
 
     return render(request, 'Social_Network/home.html', context)
-
 
 def addComment(request,post_id):
     comment_form = commentForm(request.POST)
@@ -118,18 +95,12 @@ def addComment(request,post_id):
 
     return redirect('home')
 
-
-
-
 def addLike(request,post_id):
     user_of_like = User.objects.get(id=request.user.id)
     post_of_like = Post.objects.get(id=post_id)
     like = Like(post=post_of_like,liker=user_of_like)
     like.save()
     return redirect('home')
-
-
-
 
 def search(request):
     search_form = searchForm(request.POST)
@@ -140,7 +111,6 @@ def search(request):
 
     context = {'username' : user_of_search}
     return render(request, 'Social_Network/profile.html',context)
-
 
 def addFriend(request,friend_id):
     user_from = User.objects.get(id=request.user.id)
@@ -178,7 +148,6 @@ def unFriend(request,friend_id):
 
     return redirect('home')
 
-
 def followFriend(request,friend_id):
     user_from = User.objects.get(id=request.user.id)
     user_to   = User.objects.get(id=friend_id)
@@ -195,9 +164,6 @@ def followFriend(request,friend_id):
         connection.save()
 
     return redirect('home')
-
-
-
 
 def confirmFriend(request,friend_id):
     user_to = User.objects.get(id=request.user.id)
@@ -222,7 +188,6 @@ def confirmFriend(request,friend_id):
         connection.save()
 
     return redirect('home')
-
 
 def showRequest(request):
 
