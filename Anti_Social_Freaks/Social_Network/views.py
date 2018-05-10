@@ -9,6 +9,16 @@ from django.contrib.auth import logout
 # Create your views here.
 ####################### Log In and Log Out
 
+
+
+
+def start(request):
+    return render(request,'Social_Network/start.html')
+
+
+
+
+
 def NewsFeed(id):
     current_user = User.objects.get(id=id)
     my_connections = Connection.objects.filter(From=current_user, status=1)
