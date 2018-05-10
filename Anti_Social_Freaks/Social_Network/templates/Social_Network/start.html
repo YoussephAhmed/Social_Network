@@ -1,6 +1,7 @@
 {% load staticfiles %}
 
 
+
 <!DOCTYPE html>
   <html>
   <head>
@@ -69,41 +70,30 @@
   </head>
   <body class="backGround">
 
-    <nav class="navbar navbar-inverse ">
+
+
+  <nav class="navbar navbar-inverse ">
       <div class="container-fluid">
         <div class="navbar-header">
           <img class="icon" src=" {% static 'Social_Network/images/White_Globe_Icon.png' %} " />
 
-          <a  class="navbar-brand" href="Home.html">Anti-Social Freaks</a>
+          <a  class="navbar-brand" href="{%   url 'Social_Network:start' %}">Anti-Social Freaks</a>
         </div>
-            <ul class="nav navbar-nav navbar-right">
-              <form class="navbar-form navbar-left" action="/action_page.php">
-               <div class="input-group">
-                 <input type="text" class="form-control" placeholder="Search">
-                 <div class="input-group-btn">
-                   <button class="btn btn-default" type="submit">
-                     <i class="glyphicon glyphicon-search"></i>
-                   </button>
-                 </div>
-               </div>
-             </form>
 
-              <li class="active"> <a href="Home.html">Home</a></li>
-              <li><a href="TimeLine.html">Timeline</a></li>
-              <!-- <li><a href="MyProfile.html">My Profile</a></li> -->
-              <li><a href="SignIn.html">Sign In</a></li>
-              <li><a href="SignUp.html">Sign Up</a></li>
-              <!-- <li><a href="SignOut.html">Sign Out</a></li> -->
-
-
-
-            </ul>
       </div>
     </nav>
+
+
+
     <div class="MainContainer">
     <h1 class="MainTitle">Hello There!!</h1>
-    <h2 class="SecondTitle">New to the website? <a href="SignUp.html" style="font-weight: bold;  font-size: 40px;">Sign Up</a></h2>
-    <h2 class="SecondTitle">Already a member? <a href="SignIn.html" style="font-weight: bold; font-size: 40px;">Sign In</a></h2>
+
+    <h2 class="SecondTitle"> New to the website?  <a href="{%   url 'Social_Network:register' %}" style="font-weight: bold; font-size: 40px; color: #2b669a;
+     text-decoration: none ; ">Sign Up</a></h2>
+
+     <h2 class="SecondTitle">Already a member? <a href="login/" style="font-weight: bold; font-size: 40px; color: #d9534f;
+     text-decoration: none ; ">Log In</a></h2>
+
 
     </div>
 

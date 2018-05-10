@@ -15,6 +15,10 @@ from django.contrib.auth import logout
 ####################### Log In and Log Out
 
 
+def start(request):
+    return render(request,'Social_Network/start.html')
+
+
 
 
 def register(request):
