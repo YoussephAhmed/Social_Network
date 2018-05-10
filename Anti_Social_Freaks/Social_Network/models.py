@@ -1,15 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
-'''
-class User (models.Model):
-    user_name=models.CharField(max_length=50)
-    password=models.CharField(max_length=50)
-'''
+from datetime import datetime
+
+
 class Profile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE,primary_key=True,)
-    mobile=models.CharField(max_length=11,blank=True)
-    about=models.CharField(max_length=500,blank=True)
-    date_of_birth= models.DateField(blank=True)
+    mobile=models.CharField(max_length=11)
+    about=models.CharField(max_length=500)
+    date_of_birth= models.DateField()
     image=models.ImageField(upload_to='profile_image',blank=True)#$$$$$$$$$$$$$$$$$
 
     def __str__(self):
@@ -20,15 +18,15 @@ class Profile(models.Model):
 class Post(models.Model):# shares is missing $$$$$$$$$$
     publisher = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.CharField(max_length=2000)
-    date_of_post = models.DateTimeField(null=True)
+    date = models.DateTimeField(blank=True,default=datetime.now)
 
     def __str__(self):
         return self.content
-2
+
 
 class Comment(models.Model):
     post=models.ForeignKey(Post, on_delete=models.CASCADE)
-    content = models.CharField(max_length=2000)
+    content = models.CharField(max_length=1000)
     commenter = models.ForeignKey(User, on_delete=models.CASCADE ,null=True )
 
     def __str__(self):
@@ -37,36 +35,47 @@ class Comment(models.Model):
 
 class Like(models.Model):
     liker=models.ForeignKey(User,on_delete=models.CASCADE)
-    # Type of Like is missing
     post=models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '%s %s %s' % (self.liker, 'Liked', self.post)
 
 
 class Connection(models.Model):
     From = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_requests_created')
-    To =models.ForeignKey(User, on_delete=models.CASCADE)
-    interaction = models.IntegerField() # indicates how much a user interacts with another
+    To = models.ForeignKey(User, on_delete=models.CASCADE)
+    interaction = models.IntegerField(blank=True)  # indicates how much a user interacts with another
     status = models.IntegerField()
+
+    def __str__(self):
+        if (self.status == 0):
+            return '%s' % ("Pending")
+
+
+        elif (self.status == 1):
+            return '%s' % ("Friends")
+
+
+        elif (self.status == 2):
+            return '%s' % ("Declined")
+
+        elif (self.status == 3):
+            return '%s' % ("Blocked")
+
+
+        elif (self.status == 4):
+            return '%s' % ("Followed")
+
+        else:
+            return '%s' % ("Blocked")
+
     '''
     status code
     pending : 0
     Friends : 1
     Declined : 2
     Blocked : 3
-    
-
-    def __str__(self):
-        if (status == 0):
-            return "pending"
-        elif (status == 1):
-            return "Friends"
-        elif (status == 2):
-            return "Declined"
-        else :
-            return "Blocked"
+    Follow :4
     '''
-
-
-
-
 
 
