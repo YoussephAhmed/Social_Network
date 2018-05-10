@@ -9,6 +9,7 @@ app_name = 'Social_Network'
 # all add your needed urls here
 urlpatterns = [
 
+
     # Starting Page
     path('' , views.start  , name='start' ),
 

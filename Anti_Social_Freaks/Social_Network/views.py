@@ -7,7 +7,9 @@ from .models import *
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 # Create your views here.
-####################### Log In and Log Out
+
+
+
 
 
 
@@ -18,6 +20,10 @@ def start(request):
 
 
 
+
+
+
+####################### Log In and Log Out
 
 def NewsFeed(id):
     current_user = User.objects.get(id=id)
