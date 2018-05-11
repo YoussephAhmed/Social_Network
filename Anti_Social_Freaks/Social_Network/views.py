@@ -1,24 +1,15 @@
 from django.shortcuts import render
-from django .http import HttpResponsePermanentRedirect
 from .forms import *
-from django.http import HttpResponse
-from django .template import loader
 from .models import *
 from django.shortcuts import redirect
 from django.contrib.auth import logout
+from collections import defaultdict
+
 # Create your views here.
-
-
-
-
-
 
 
 def start(request):
     return render(request,'Social_Network/start.html')
-
-
-
 
 
 
@@ -84,7 +75,8 @@ def home(request): # news feed and posts from other freaks
             post.save()
     else:
         post_form = postForm()
-        search_form = searchForm()
+
+    search_form = searchForm()
     comment_form = commentForm()
     posts = NewsFeed(request.user.id)
     suggested_friends = getSuggestedFriends(request.user.id)
@@ -109,14 +101,14 @@ def addComment(request,post_id):
         comment = Comment(post=post_of_comment,content=comment_of_post,commenter=user_of_comment)
         comment.save()
 
-    return redirect('home')
+    return redirect('Social_Network:home')
 
 def addLike(request,post_id):
     user_of_like = User.objects.get(id=request.user.id)
     post_of_like = Post.objects.get(id=post_id)
     like = Like(post=post_of_like,liker=user_of_like)
     like.save()
-    return redirect('home')
+    return redirect('Social_Network:home')
 
 def search(request):
     search_form = searchForm(request.POST)
@@ -125,8 +117,19 @@ def search(request):
         username = search_form.cleaned_data['username']
         user_of_search = User.objects.get(username=username)
 
-    context = {'username' : user_of_search}
+    posts = Post.objects.filter(publisher=user_of_search)
+    context = {'username' : user_of_search , 'posts' :posts}
     return render(request, 'Social_Network/profile.html',context)
+
+
+
+def profile(request):
+    user = User.objects.get(id = request.user.id)
+    posts = Post.objects.filter(publisher=user)
+    friend_requests=Connection.objects.filter(To=request.user,status=0)
+    context = {'profile' : user , 'posts':posts , 'friend_requests' : friend_requests}
+    return render(request,'Social_Network/myprofile.html',context)
+
 
 def addFriend(request,friend_id):
     user_from = User.objects.get(id=request.user.id)
@@ -143,7 +146,7 @@ def addFriend(request,friend_id):
         connection = Connection(From=user_from,To=user_to,status=0,interaction=0)
         connection.save()
 
-    return redirect('home')
+    return redirect('Social_Network:home')
 
 def unFriend(request,friend_id):
     user_from = User.objects.get(id=request.user.id)
@@ -162,7 +165,7 @@ def unFriend(request,friend_id):
         connection2.delete()
 
 
-    return redirect('home')
+    return redirect('Social_Network:home')
 
 def followFriend(request,friend_id):
     user_from = User.objects.get(id=request.user.id)
@@ -179,7 +182,7 @@ def followFriend(request,friend_id):
         connection = Connection(From=user_from,To=user_to,status=4,interaction=0)
         connection.save()
 
-    return redirect('home')
+    return redirect('Social_Network:home')
 
 def confirmFriend(request,friend_id):
     user_to = User.objects.get(id=request.user.id)
@@ -203,7 +206,7 @@ def confirmFriend(request,friend_id):
         connection = Connection(From=user_to,To=user_from,status=1,interaction=0)# creating reverse connection
         connection.save()
 
-    return redirect('home')
+    return redirect('Social_Network:home')
 
 def showRequest(request):
 
@@ -212,3 +215,51 @@ def showRequest(request):
         'friend_requests' : friend_requests
     }
     return render(request, 'Social_Network/Friend_requests.html', context)
+
+
+
+def userProfile(request,user_id):
+
+    user = User.objects.get(id = user_id)
+    posts = Post.objects.filter(publisher=user)
+    context = {'username': user , 'posts' : posts}
+    return render(request, 'Social_Network/profile.html', context)
+
+
+######################### Graph
+
+
+def generate_graph(graph):
+    graph_connections = Connection.objects.filter(status=1)
+
+    for connection in graph_connections:
+        graph.add_edge(connection.From, connection.To)
+
+
+class Graph:
+    # Constructor
+    def __init__(self):
+        # default dictionary to store graph
+        self.graph = defaultdict(list)
+
+    #function to add edges
+    def add_edge(self, u, v):
+        self[u].append(v)
+
+    #v is the starting node and u is the node we are trying to find a connection between it and v
+    def explore(self,v, u, visited):
+        visited[v] = True
+        if v == u:
+            return "connected"
+
+        for i in self.graph[v]:
+            if visited[i] == False:
+                self.explore(self,i,visited)
+
+    def DFS(self, v, u):
+        visited = [False] * (len(self.graph))
+        self.explore(v, u, visited)
+
+
+
+
