@@ -20,17 +20,20 @@ class Graph:
         self[u].append(v)
 
     #v is the starting node and u is the node we are trying to find a connection between it and v
-    def explore(self,v, u, visited):
+    def explore(self,v, u, visited, connected):
         visited[v] = True
         if v == u:
-            return "connected"
+            connected = True
+            return
 
         for i in self.graph[v]:
             if visited[i] == False:
                 self.explore(self,i,visited)
 
     def DFS(self, v, u):
+        connected = False
         visited = [False] * (len(self.graph))
-        self.explore(v, u, visited)
+        self.explore(v, u, visited, connected)
+        return connected
 
 
