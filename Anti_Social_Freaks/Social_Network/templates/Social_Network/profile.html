@@ -213,7 +213,7 @@
 
               <li> <a href="{%   url 'Social_Network:home' %}">Timeline</a></li>
               <li><a href="{%   url 'Social_Network:profile' %}">My Profile</a></li>
-              <li><a href="logout/">Sign Out</a></li>
+              <li><a href="{% url 'Social_Network:logout' %}">Sign Out</a></li>
 
 
 
@@ -329,7 +329,7 @@
 
     <div class="col-sm-2 sidenav">
       <div class="SuggestedFriendsContainer">
-        <p style="color: white;">Options you have to this Freak</p>
+        <p style="color: white;">Options you have to this Freak called {{ username.username }} </p>
       </div>
 
 
@@ -367,6 +367,16 @@
 
 </form>
 
+
+<br>
+
+            <form method="post"  action="{%   url 'Social_Network:connection' username.id  %}">
+
+    {% csrf_token %}
+
+     <button type="submit" class="btn btn-dark btn-sm">Check Connection</button>
+
+            </form>
 
 
 

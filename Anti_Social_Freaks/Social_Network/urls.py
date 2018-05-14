@@ -15,8 +15,8 @@ urlpatterns = [
 
     # Sign Up, Log in and Log out
     # this is just a test make sure to try this path first to make sure that everyting is ok
-    path('login/', login, {'template_name': 'Social_Network/login.html'}),
-    path('logout/', logout, {'template_name': 'Social_Network/logout.html'}),
+    path('login/', login, {'template_name': 'Social_Network/login.html'},name= 'login' ),
+    path('logout/', logout, {'template_name': 'Social_Network/logout.html'},name= 'logout'),
     path('register/', views.register, name='register'),
     path('home',views.home , name='home'), # home page
     path('profile', views.profile, name='profile'),  # profile page
@@ -28,6 +28,7 @@ urlpatterns = [
     path('unFriend/<int:friend_id>/', views.unFriend, name='unfriend' ),
     path('FriendRequests/', views.showRequest, name='showrequest' ),
     path('FriendRequests/Confirm/<int:friend_id>/', views.confirmFriend, name='confirmfriend'),
-    path('userProfile/<int:user_id>/', views.userProfile , name='userprofile')
+    path('userProfile/<int:user_id>/', views.userProfile , name='userprofile'),
+    path('connection/<int:user_id>/', views.checkConnection , name='connection')
 
 ]

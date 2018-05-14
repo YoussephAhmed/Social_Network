@@ -44,7 +44,7 @@ class Connection(models.Model):
 
 
         elif (self.status == 1):
-            return '%s' % ("Friends")
+            return '%s %s %s' % ("Friends" , self.From.username, self.To.username)
 
 
         elif (self.status == 2):
